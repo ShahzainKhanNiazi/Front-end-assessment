@@ -1,25 +1,25 @@
 import React, { useState } from 'react'
 
 
-const Reply = ({replies}) => {
+const Reply = ({reply, canRemoveReply, removeReply}) => {
     const [isLiked, setIsLiked] = useState(false);
     
 
 
     return (
-    <div className='w-full flex gap-3 bg-white p-3'>
+    <div className='flex w-full gap-3 p-3 bg-white'>
         {/* image */}
         <div className='rounded-full w-9 h-9'>
             <img 
-            src='/images/user1.png'
+            src={reply.user.profilePic}
             alt="user profile"
-            className='rounded-full w-full object-cover'
+            className='object-cover w-full rounded-full'
             />
         </div>
         {/*name and comment text */}
-        <div className='flex-1 flex flex-col gap-1 text-sm'>
-            <span className='font-medium'>Maria</span>
-            <p className='font-light'>I was very glad to have you after such a long time. Can you plan a meetup? Maybe this weekend?</p>
+        <div className='flex flex-col flex-1 gap-1 text-sm'>
+            <span className='font-medium'>{reply.user.name}</span>
+            <p className='font-light'>{reply.text}</p>
             <div className='flex items-center gap-4 font-light'>
                 {
                     !isLiked ?
@@ -34,7 +34,7 @@ const Reply = ({replies}) => {
                     </span>
                 }
                 .
-                <span className='capitalize text-danger-main font-medium cursor-pointer' onClick={() => ""}>remove</span>
+                {canRemoveReply && <span className='font-medium capitalize cursor-pointer text-danger-main' onClick={removeReply}>remove</span>}
 
             </div>
         </div>

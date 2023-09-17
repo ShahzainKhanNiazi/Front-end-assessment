@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import Reply from './Reply';
 
 
-const Comment = ( {comment, onRemove, onLike, onReply, currentUser} ) => {
+const Comment = ( {comment, onRemove, onLike, onReply, removeReply, currentUser} ) => {
     const [isLiked, setIsLiked] = useState(false);
     const [addReply, setAddReply] = useState(false);
     const [replyText, setReplyText] = useState("");
@@ -44,34 +44,33 @@ const Comment = ( {comment, onRemove, onLike, onReply, currentUser} ) => {
                 {comment.likeCount}
                     </span>
                 .
-                <span className='font-medium capitalize cursor-pointer text-focused' onClick={() => setAddReply(true)}>reply</span>
+                {canRemoveComment ?
+                <span className='font-medium capitalize cursor-pointer text-danger-main' onClick={() => onRemove(comment.id)}>remove</span>
+                :
+                <span className='font-medium capitalize cursor-pointer text-focused' onClick={() => setAddReply(true)}>reply</span>}
+                
 
             </div>
 
-            {comment.replies?.length > 0 && (
+            {(comment.replies?.length > 0) && (
                 comment.replies?.map((reply, index) => {
                     return (
-                        <div>
-                    {canRemoveReply(reply) ? (
-                        
-                        <Reply />
-                      ) :
-                      (<button onClick={() => onRemove(comment.id, reply.id)}>Remove Reply</button>)
-                    }</div>
+                        <Reply canRemoveReply={canRemoveReply(reply)} reply={reply}  removeReply={()  => {removeReply(comment.id, reply.id)} } />
+                    
                     )                  
                     
                 })
             )}
 
-            <Reply/>
+            
 
             {/* comment box */}
             {
                 addReply && (
                     <div className='w-full p-3 bg-white'>
                 <div className='flex items-center p-3'>
-                <textarea className='w-full resize-none focus:outline-none' onChange={(e) => setReplyText(e.target.value)} placeholder='Write your comment'/>
-                <span>
+                <textarea className='w-full font-light resize-none focus:outline-none' onChange={(e) => {setReplyText(e.target.value)}} placeholder='Write your reply' value={replyText}/>
+                <span onClick={handleReplySubmit}>
                     <img src="/images/send.svg" alt="send icon" className=''/>
                 </span>
 

@@ -16,10 +16,7 @@ const [comments, setComments] = useState([ {
     },
     comment: "I was very glad to have you after such a long time. Can you plan a meetup? Maybe this weekend?",
     likeCount: 0,
-    replies: [{id: 1,
-        userId: "",
-        reply: ""
-    }],
+    replies: [],
 },{
     id:  2,
     user: {
@@ -29,10 +26,7 @@ const [comments, setComments] = useState([ {
     },
     comment: "Home sweet home! I’m glad you are back. It’s been two year and miss the football matches we have together. A lot has been changed since you left. Let’s meet at the ground tomorrow evening? ",
     likeCount: 0,
-    replies: [{id: 1,
-        userId: "",
-        reply: ""
-    }],
+    replies: [],
 },
 {
     id:  3,
@@ -43,10 +37,7 @@ const [comments, setComments] = useState([ {
     },
     comment: "Hey bud, welcome back to home. It’s so long to see you back again. Would love to hear the travelling stories of yours. Your or my place?",
     likeCount: 0,
-    replies: [{id: 1,
-        userId: "",
-        reply: ""
-    }],
+    replies: [],
 }
  ])
 const [commentText, setCommentText] = useState("")
@@ -64,6 +55,7 @@ const addComment = (text) => {
       replies: [],
     };
     setComments([...comments, newComment]);
+    setCommentText("")
   };
 
 const removeComment = (commentId) => {
@@ -84,16 +76,53 @@ const removeComment = (commentId) => {
     setComments(updatedComments);
   };
 
-  const addReply = (commentId, replyText, user) => {
+  const addReply = (commentId, replyText) => {
+    const previousComment = comments.find(comment => comment.user.id === 4);
+    let replyUser;
+    
+    if(previousComment) {replyUser = previousComment.user};
+    console.log("replyUser")
+    console.log(comments.find(comment => comment.user.id === 4)?.user)
+
+    let updatedComments = [];
+
+    if(replyUser) {
+       updatedComments = comments.map((comment) => {
+        if (comment.id === commentId) {
+          return {
+            ...comment,
+            replies: [...comment.replies, { id: comment.replies.length + 1, text: replyText, user: replyUser  }],
+          };
+        }
+        return comment;
+      });   
+    } else {
+       updatedComments = comments.map((comment) => {
+        if (comment.id === commentId) {
+          return {
+            ...comment,
+            replies: [...comment.replies, {id: comment.replies.length + 1, text: replyText,   user: {
+              id: 4,
+              name: "john doe",
+              profilePic: "/images/user4.png",
+          },  }],
+          };
+        }
+        return comment;
+      });
+    }
+    
+    setComments(updatedComments);
+  };
+
+  const handleRemoveReply = (commentId, replyId) => {
     const updatedComments = comments.map((comment) => {
       if (comment.id === commentId) {
-        return {
-          ...comment,
-          replies: [...comment.replies, { text: replyText, user: user  }],
-        };
+        comment.replies = comment.replies.filter((reply) => reply.id !== replyId);
       }
       return comment;
     });
+
     setComments(updatedComments);
   };
 
@@ -108,7 +137,7 @@ const removeComment = (commentId) => {
                 {
                     comments.map((comment, index) => (
                         <Comment key={comment.id} comment={comment}   onRemove={removeComment}
-                        onLike={handleLike} onReply={addReply}/> 
+                        onLike={handleLike} onReply={addReply} currentUser={4} removeReply={handleRemoveReply}/> 
 
                     ))
                 }
@@ -119,7 +148,7 @@ const removeComment = (commentId) => {
             {/* comment box */}
             <div className='w-full p-3 bg-white'>
                 <div className='flex items-center p-3'>
-                <textarea className='w-full resize-none focus:outline-none' placeholder='Write your comment' onChange={(e) => setCommentText(e.target.value)}/>
+                <textarea className='w-full resize-none focus:outline-none' placeholder='Write your comment' onChange={(e) => setCommentText(e.target.value)} value={commentText}/>
                 <button className='' onClick={addComment}>
                     <img src="/images/send.svg" alt="send icon" className=''/>
                 </button>

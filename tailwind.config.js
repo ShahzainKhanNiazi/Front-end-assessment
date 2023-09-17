@@ -9,6 +9,9 @@ module.exports = {
         'background-color': '#EEF2F7',
         focused : '#6590FF'
       },
+      fontFamily :{
+        Poppins: ["Poppins"],
+      },
       boxShadow:{
 
       }
